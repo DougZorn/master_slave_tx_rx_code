@@ -110,7 +110,7 @@ void setup(){
 }
 
 void loop(){
-  //startPacket();
+  startPacket();
   //unsigned long currentMillis = millis();
   //if(currentMillis - previousMillis > sendInterval) {
    // previousMillis = currentMillis;   

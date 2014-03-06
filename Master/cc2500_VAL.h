@@ -47,8 +47,8 @@
 #define VAL_FREQ2            0x5D
 #define VAL_FREQ1            0x93
 #define VAL_FREQ0            0xB1
-#define VAL_MDMCFG4          0x86
-#define VAL_MDMCFG3          0x83
+#define VAL_MDMCFG4          0x8D // was 86
+#define VAL_MDMCFG3          0x3B // was 83
 #define VAL_MDMCFG2          0x03
 #define VAL_MDMCFG1          0x22
 #define VAL_MDMCFG0          0xF8

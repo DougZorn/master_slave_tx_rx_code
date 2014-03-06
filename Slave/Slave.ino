@@ -65,7 +65,8 @@ void loop(){
     //previousMillis = currentMillis;   
     //sendPacket();
   //}
-  //listenForPacket();
+  Serial.println("In main loop waiting to listen");
+  listenForPacket();
 }
 
 void waitStart(){
@@ -73,9 +74,9 @@ void waitStart(){
   int state = 0;
   unsigned char recvPacket[7];
   while(0==state){
-      //Serial.println("here1");
-    SendStrobe(CC2500_RX);
-    WriteReg(REG_IOCFG1,0x01);
+      //Serial.println(digitalRead(MISO));
+    SendStrobe(CC2500_RX);                           //enable RX see page 57 of cc2500. Also send strobe returns the byte from the bus
+    WriteReg(REG_IOCFG1,0x01);                       //This configures pin GDO1 which is also SO associated to the RX FIFO; Asserts when RX FIFO is filled at or above the RX FIFO threshold or the end of packet is reached. De-asserts when the RX FIFO is empty. Page 53
     //delay(20);
     if(digitalRead(MISO)) {
       Serial.println("here2");
@@ -174,7 +175,7 @@ char SendStrobe(char strobe){
   while (digitalRead(MISO) == HIGH) {
   };
     
-  char result =  SPI.transfer(strobe);
+  char result =  SPI.transfer(strobe);    //spi.transfer returns the byte read from the bus
   digitalWrite(SS,HIGH);
   delay(10);
   return result;
@@ -182,10 +183,10 @@ char SendStrobe(char strobe){
 
 void init_CC2500(){
   WriteReg(0x3E,0xFF);
-  WriteReg(REG_IOCFG2,0x06);
-  WriteReg(REG_IOCFG0,0x01);
+  WriteReg(REG_IOCFG2,0x06); 
+  WriteReg(REG_IOCFG0,0x01); 
   //WriteReg(REG_IOCFG1,0x0E);
-  WriteReg(REG_IOCFG1,0x06);
+  WriteReg(REG_IOCFG1,0x06); //Asserts when sync word has been sent / received, and de-asserts at the end of the packet. In RX, the pin will de-assert when the optional address check fails or the RX FIFO overflows. In TX the pin will de-assert if the TX FIFO underflows.
 
   //WriteReg(REG_FIFOTHR,VAL_FIFOTHR);
   WriteReg(REG_FIFOTHR, 0x02);
