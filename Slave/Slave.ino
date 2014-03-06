@@ -112,7 +112,7 @@ int checkCal( int length, unsigned char *packet){
 
 void listenForPacket() {
   SendStrobe(CC2500_RX);
-  WriteReg(REG_IOCFG1,0x01);
+  WriteReg(REG_IOCFG1,0x06);
   //delay(20);
   unsigned long currentMillis = millis();
   while (digitalRead(MISO)) {      

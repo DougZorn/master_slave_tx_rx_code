@@ -95,7 +95,9 @@ float getSensorData(int nodeA){ // will this average sensor data from sesnor hea
 long previousTXTimeoutMillis = 0;
 long previousMillis = 0; 
 
-long sendInterval = 400; // in milliseconds
+long sendInterval = 800; // in milliseconds
+
+unsigned char TP[7] = {7, myName, broadCast,'H','I',0,0};
 
 void setup(){
   Serial.begin(9600);
@@ -105,6 +107,7 @@ void setup(){
   SPI.begin();
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
+  SendStrobe(CC2500_SRES);
   init_CC2500();
   Read_Config_Regs(); 
   startPacket();
@@ -112,16 +115,16 @@ void setup(){
 
 void loop(){
   startPacket();
-  //unsigned long currentMillis = millis();
-  //if(currentMillis - previousMillis > sendInterval) {
-   // previousMillis = currentMillis;   
-    //sendPacket(7, TP);
-  //}
+  unsigned long currentMillis = millis();
+  if(currentMillis - previousMillis > sendInterval) {
+    previousMillis = currentMillis;   
+    sendPacket(7, TP);
+  }
   //listenForPacket();
 }
 
 void startPacket(){
- unsigned char TP[7] = {7, myName, broadCast,'H','I',0,0};
+ 
  for(int x=0; x<3; x++){
    if(x==2){
      TP[5]= finish;
