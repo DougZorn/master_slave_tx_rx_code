@@ -84,6 +84,7 @@ float getSensorData(int nodeA){ // will this average sensor data from sesnor hea
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
+#define CC2500_SRES    0x30 // reset strobe 
 
 #define myName         0x00
 #define broadCast      0xFF

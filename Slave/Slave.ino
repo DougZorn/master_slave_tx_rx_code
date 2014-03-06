@@ -27,6 +27,7 @@
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
+#define CC2500_SRES    0x30 // reset strobe 
 
 #define masterName     0x00;
 #define broadCast      0xFF;
@@ -52,6 +53,7 @@ void setup(){
   SPI.begin();
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
+  SendStrobe(CC2500_SRES);
   init_CC2500();
   Read_Config_Regs(); 
   
