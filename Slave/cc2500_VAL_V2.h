@@ -13,7 +13,7 @@
  Manchester enable = false 
  CRC enable = true 
  Deviation = 38.085938 
- Packet length mode = Infinite packet length mode 
+ Packet length mode = Variable packet length mode. Packet length configured by the first byte after sync word 
  Packet length = 255 
  Modulation format = 2-FSK 
  Base frequency = 2432.999908 
