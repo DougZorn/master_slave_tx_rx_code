@@ -281,30 +281,30 @@ void init_CC2500(){
   WriteReg(REG_IOCFG1,0x06);
 
   //WriteReg(REG_FIFOTHR,VAL_FIFOTHR);
-  WriteReg(REG_FIFOTHR, 0x02);
-  WriteReg(REG_SYNC1,VAL_SYNC1);
-  WriteReg(REG_SYNC0,VAL_SYNC0);
-  WriteReg(REG_PKTLEN,VAL_PKTLEN);
+  WriteReg(REG_FIFOTHR, 0x02);                     //Rx and Tx FIFO threshold
+  WriteReg(REG_SYNC1,VAL_SYNC1);                   //Sync word, high byte //a syncword, sync character or preamble is used to synchronize a transmission by indicating the end of header information and the start of data. It is a known sequence of data used to identify frame start, also called reference signal or midamble in wireless communications.   
+  WriteReg(REG_SYNC0,VAL_SYNC0);                   //Sync word, low byte
+  WriteReg(REG_PKTLEN,VAL_PKTLEN);                 //packet length
   //WriteReg(REG_PKTLEN, 0x06);
-  WriteReg(REG_PKTCTRL1,0x8C);
+  WriteReg(REG_PKTCTRL1,0x8C);                     //packet1 automation control // no address check, RSSI LQI append, auto flush when crc not ok // 0xC6 address check, LQI RSSI append, auto flush off on crc fail
   //WriteReg(REG_PKTCTRL0,VAL_PKTCTRL0);
-  WriteReg(REG_PKTCTRL0, 0x0D);
+  WriteReg(REG_PKTCTRL0, 0x0D);                    //packet0 automation control //0x0D Variable packet length: Packet length configured by the first byte after sync word, CRC calculation in TX and CRC check in RX enabled, Normal mode: use FIFOs for RX and TX. 0x46 will add whiting (dc balance) and turn off support for 2400
   
-  WriteReg(REG_ADDR,VAL_ADDR);
-  WriteReg(REG_CHANNR,VAL_CHANNR);
-  WriteReg(REG_FSCTRL1,VAL_FSCTRL1);
-  WriteReg(REG_FSCTRL0,VAL_FSCTRL0);
-  WriteReg(REG_FREQ2,VAL_FREQ2);
+  WriteReg(REG_ADDR,VAL_ADDR);                     //Device Address use for packet filtration
+  WriteReg(REG_CHANNR,VAL_CHANNR);                 //8-bit unsigned channel number
+  WriteReg(REG_FSCTRL1,VAL_FSCTRL1);               //fequency synthesizer control IF frequency to employ in RX. Probably don't change. but the default is 0x0F
+  WriteReg(REG_FSCTRL0,VAL_FSCTRL0);               //Frequency offset added to the base frequency before being used by the FS. (2’s complement).
+  WriteReg(REG_FREQ2,VAL_FREQ2);                   //FREQ[23:0] is the base frequency for the frequency synthesiser in increments of FXOSC/216
   WriteReg(REG_FREQ1,VAL_FREQ1);
   WriteReg(REG_FREQ0,VAL_FREQ0);
   /*WriteReg(REG_MDMCFG4,0x8C);
   WriteReg(REG_MDMCFG3,0x32);
   WriteReg(REG_MDMCFG1,0x72); */
-  WriteReg(REG_MDMCFG4,VAL_MDMCFG4);
-  WriteReg(REG_MDMCFG3,VAL_MDMCFG3);
-  WriteReg(REG_MDMCFG2,VAL_MDMCFG2);
-  WriteReg(REG_MDMCFG1,VAL_MDMCFG1);
-  WriteReg(REG_MDMCFG0,VAL_MDMCFG0);
+  WriteReg(REG_MDMCFG4,VAL_MDMCFG4);               // bandwidth
+  WriteReg(REG_MDMCFG3,VAL_MDMCFG3);               // data rate //note: increasing the data rate decreases the receiver sensitivity and might not be able to use FSK modulation format (which may or may not be an issue)
+  WriteReg(REG_MDMCFG2,VAL_MDMCFG2);               // 30/32 sync word bits detected //what's odd about this is that the each sync word is one byte totalling 16 so why the 30/32 check? condsider 0x02 16/16 synce words detected     
+  WriteReg(REG_MDMCFG1,VAL_MDMCFG1);               // 
+  WriteReg(REG_MDMCFG0,VAL_MDMCFG0);               //channel spacing
   WriteReg(REG_DEVIATN,VAL_DEVIATN);
   WriteReg(REG_MCSM2,VAL_MCSM2);
   WriteReg(REG_MCSM1,VAL_MCSM1);
@@ -318,22 +318,22 @@ void init_CC2500(){
   //WriteReg(REG_AGCCTRL1,VAL_AGCCTRL1);
   WriteReg(REG_AGCCTRL0,VAL_AGCCTRL0);
   WriteReg(REG_WOREVT1,VAL_WOREVT1);
-  WriteReg(REG_WOREVT0,VAL_WOREVT0);
-  WriteReg(REG_WORCTRL,0x78);
-  WriteReg(REG_FREND1,VAL_FREND1);
-  WriteReg(REG_FREND0,VAL_FREND0);
+  WriteReg(REG_WOREVT0,VAL_WOREVT0);                        
+  WriteReg(REG_WORCTRL,0x78);                   //Wake On Radio Control
+  WriteReg(REG_FREND1,VAL_FREND1);              //Front End RX Configuration
+  WriteReg(REG_FREND0,VAL_FREND0);              // Adjusts current TX LO buffer (input to PA). The value to use in this field is given by the SmartRF. Selects PA power setting. This value is an index to the PATABLE.
   WriteReg(REG_FSCAL3,VAL_FSCAL3);
   WriteReg(REG_FSCAL2,VAL_FSCAL2);
-  WriteReg(REG_FSCAL1,VAL_FSCAL1);
-  WriteReg(REG_FSCAL0,VAL_FSCAL0);
-  WriteReg(REG_RCCTRL1,VAL_RCCTRL1);
-  WriteReg(REG_RCCTRL0,VAL_RCCTRL0);
-  WriteReg(REG_FSTEST,VAL_FSTEST);
-  WriteReg(REG_PTEST,VAL_PTEST);
-  WriteReg(REG_AGCTEST,VAL_AGCTEST);
-  WriteReg(REG_TEST2,VAL_TEST2);
-  WriteReg(REG_TEST1,VAL_TEST1);
-  WriteReg(REG_TEST0,VAL_TEST0);
+  WriteReg(REG_FSCAL1,VAL_FSCAL1);              //
+  WriteReg(REG_FSCAL0,VAL_FSCAL0);              //Frequency synthesizer calibration control. The value to use in this register is given by the SmartRF
+  WriteReg(REG_RCCTRL1,VAL_RCCTRL1);            //RC oscillator configuration.
+  WriteReg(REG_RCCTRL0,VAL_RCCTRL0);            //RC oscillator configuration.
+  WriteReg(REG_FSTEST,VAL_FSTEST);              //For test only. Do not write to this register.
+  WriteReg(REG_PTEST,VAL_PTEST);                //Writing 0xBF to this register makes the on-chip temperature sensor available in the IDLE state. The default 0x7F value should then be written back before leaving the IDLE state. Other use of this register is for test only.
+  WriteReg(REG_AGCTEST,VAL_AGCTEST);            //For test only. Do not write to this register.
+  WriteReg(REG_TEST2,VAL_TEST2);                //Set to 0x81 for improved sensitivity at data rates ≤100 kBaud. The temperature range is then from 0oC to +85oC.
+  WriteReg(REG_TEST1,VAL_TEST1);                //Set to 0x35 for improved sensitivity at data rates ≤100 kBaud. The temperature range is then from 0oC to +85oC.  
+  WriteReg(REG_TEST0,VAL_TEST0);                // Set by smartRF studio
 /*  
   WriteReg(REG_PARTNUM,VAL_PARTNUM);
   WriteReg(REG_VERSION,VAL_VERSION);
