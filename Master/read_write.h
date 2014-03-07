@@ -9,9 +9,24 @@ void WriteReg(char addr, char value){
     };
     
   SPI.transfer(addr);
-  delay(10);
+  delayMicroseconds(200);
   SPI.transfer(value);
   digitalWrite(SS,HIGH);
+}
+
+void WriteReg_burst(char addr, char value[], byte count)
+{
+  digitalWrite(SS,LOW);  
+  while (digitalRead(MISO) == HIGH) {
+  };
+  SPI.transfer(addr);  
+  delay(1);
+  for(byte i = 0; i<count; i++)
+  {
+    SPI.transfer(value[i]);
+    delayMicroseconds(200);
+  }
+  digitalWrite(SS,HIGH);  
 }
 
 char ReadReg(char addr){

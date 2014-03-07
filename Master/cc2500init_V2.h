@@ -6,6 +6,7 @@
 #ifndef INIT_CC2500_V2_H
 #define INIT_CC2500_V2_H
 
+char PATABLE[] = {0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 void init_CC2500_V2(){
 	WriteReg(REG_IOCFG2,VAL_IOCFG2);                //gdo2output pin configuration 
 	WriteReg(REG_IOCFG1,VAL_IOCFG1);                //gdo1output pin configuration 
@@ -54,6 +55,7 @@ void init_CC2500_V2(){
 	WriteReg(REG_TEST2,VAL_TEST2);                  //various test settings 
 	WriteReg(REG_TEST1,VAL_TEST1);                  //various test settings 
 	WriteReg(REG_TEST0,VAL_TEST0);                  //various test settings 
+        WriteReg(0x3E,0xFF);
 	//WriteReg(REG_PARTNUM,VAL_PARTNUM);              //chip id 
 	//WriteReg(REG_VERSION,VAL_VERSION);              //chip id 
 	//WriteReg(REG_FREQEST,VAL_FREQEST);              //frequency offset estimate from demodulator 

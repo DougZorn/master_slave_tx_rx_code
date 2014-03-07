@@ -13,6 +13,10 @@
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
+
+#define CC2500_TXFIFO_BURST  0x7F
+#define CC2500_RXFIFO_BURST  0xFF
+
 #define CC2500_SRES    0x30       // reset strobe 
 
 #define myName         0x00
@@ -26,7 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-unsigned char TP[7] = {7, myName, broadCast,'H','I',0,0};
+char TP[] = {6, 0xFF, 'H','E','L','L','O'};
 
 void setup(){
   Serial.begin(9600);
@@ -43,75 +47,32 @@ void setup(){
   Read_Config_Regs(); 
 }
 
-void loop(){
-  startPacket();
+void loop(){  
   unsigned long currentMillis = millis();
   if(currentMillis - previousMillis > sendInterval) {
     previousMillis = currentMillis;   
     sendPacket(7, TP);
-  }
-  //listenForPacket();
-}
-
-void startPacket(){
- 
- for(int x=0; x<3; x++){
-   if(x==2){
-     TP[5]= finish;
-     TP[6] = checkCal(7,TP);
-     sendPacket(7, TP);
-   }else{
-     TP[6] = checkCal(7,TP);
-     sendPacket(7, TP);
-   }
- }
- delay(20); 
-}
-
-int checkCal( int length, unsigned char *packet){
-  int checkSum = 0;
-  for(int x =0; x< length-1; x++){
-    checkSum += packet[x];
   } 
-  checkSum %= 0xFF; 
-  return checkSum;
 }
 
-//packet[] = {length, master, broadcast, payload1,payload2,end,checksum}
-void sendPacket(int length, unsigned char *packet){
-
-//int length, byte source, byte dest, unsigned char payload1,unsigned char payload2, int last, int checkSum){ 
+void sendPacket(byte count, char TP[]){
   WriteReg(REG_IOCFG1,0x06);
   // Make sure that the radio is in IDLE state before flushing the FIFO
   SendStrobe(CC2500_IDLE);
   // Flush TX FIFO
-  SendStrobe(CC2500_FTX);
-  /*
-  unsigned char packet[length];
-  // First Byte = Length Of Packet
-  packet[0] = length;
-  packet[1] = source;
-  packet[2] = dest;
-  packet[3] = payload1;
-  packet[4] = payload2;
-  packet[5] = last;
-  packet[6] = checkSum;
-  */
+  SendStrobe(CC2500_FTX); 
   SendStrobe(CC2500_IDLE);
-  for(int i = 0; i < length; i++)
-  {	  
-      WriteReg(CC2500_TXFIFO,packet[i]);
-  }
+
+  WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
   SendStrobe(CC2500_TX);
+  Serial.println("test");
   
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {
-  }
-  
+  }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
-  }
-  
+  }  
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);
 }
@@ -165,11 +126,11 @@ char SendStrobe(char strobe){
 
 void Read_Config_Regs(void){ 
   Serial.println(ReadReg(REG_IOCFG2),HEX);
-   delay(10);
+   delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG1),HEX);
-   delay(10);
+delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG0),HEX);
-   delay(10);
+delayMicroseconds(1);
   Serial.println(ReadReg(0x3E),HEX);
-   delay(1000000);
+   delay(100);
 }
