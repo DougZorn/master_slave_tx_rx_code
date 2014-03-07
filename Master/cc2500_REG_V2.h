@@ -1,26 +1,29 @@
  /*Sync word qualifier mode = No preamble/sync 
  CRC autoflush = false 
  Channel spacing = 199.951172 
- Data format = Synchronous serial mode 
+ Data format = Normal mode 
  Data rate = 2.39897 
  RX filter BW = 203.125000 
  Preamble count = 4 
- Whitening = false 
- Address config = No address check 
- Carrier frequency = 2432.999908 
- Device address = 0 
+ Whitening = true 
+ Address config = Address check and 0 (0x00) broadcast 
+ Carrier frequency = 2433.599762 
+ Device address = 255 
  TX power = 1 
  Manchester enable = false 
- CRC enable = false 
+ CRC enable = true 
  Deviation = 38.085938 
- Packet length mode = Infinite packet length mode 
+ Packet length mode = Variable packet length mode. Packet length configured by the first byte after sync word 
  Packet length = 255 
  Modulation format = 2-FSK 
  Base frequency = 2432.999908 
  Modulated = true 
- Channel number = 0 
+ Channel number = 3 
  PA table
 */
+
+#ifndef CC2500_REG_V2_H
+#define CC2500_REG_V2_H
  
 #define PA_TABLE {0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,}
 #define REG_IOCFG2                0x0000    //GDO2Output Pin Configuration 
@@ -84,3 +87,5 @@
 #define REG_RXBYTES               0x003B    //Underflow and Number of Bytes 
 #define REG_RCCTRL1_STATUS        0x003C    //Last RC Oscillator Calibration Result 
 #define REG_RCCTRL0_STATUS        0x003D    //Last RC Oscillator Calibration Result 
+
+#endif

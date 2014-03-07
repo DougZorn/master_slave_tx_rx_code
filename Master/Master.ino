@@ -1,78 +1,7 @@
-/**
- * GumboNode for the Arduino Uno.
- * GumboNodes are simple extremely low-power sensor networks consisting of a Microcontroller and a CC2500 wireless transceiver.
- * Since the Uno has more pins and serial output, we can use it to get more feedback from the CC2500.
- * There is also no power optimization, as this is a 'debugging' node. This is only useful if it's plugged into a computer.
- * For maximum size and power optimization, use GumboTiny.
- * Pins:
- * Hardware SPI:
- * MISO -> 12
- * MOSI -> 11
- * SCK -> 13
- * SS - > 10
- *
- * Configurable:
- * CSN -> 7
- */
- 
-/*
-#define nodesNUM 4
-
-//command center data structure
-typedef struct {
-  int nodeID;
-  float dist[(nodesNUM - 1)]; //each cell is distance between node and node with ID of cell number
-  float sensorData; 
-}cmdData;
-
-cmdData commandData[nodesNUM];
-
-//function gets distance between node A and node B
-//should this check value in nodeB array as well? if they are different do we average? compare timestamps?
-float nodeToNodeDist(int nodeA, int nodeB){
-  return commandData[nodeA].dist[nodeB];
-}
-
-//node data structure
-typedef struct { 
-  int nodeID;
-  float dist;    //do we need both dist and averaged dist?
-  float avgDist;
-  int placeholder;
-  float lqiHearingWindow[50];
-  float rssiHearingWindow[50];
-  float sDataHearingWindow[50]; //sensor data
-  float timeStamp; //this may not be necessary
-}nData;
-
-nData nodeData[nodesNUM - 1]; //array of custom data types, each cell is info about node with same ID as cell number
-
-void addData(int node, float rssi,float lqi, float sensor){
-  nodeData[node].lqiHearingWindow[nodeData[node].placeholder] = lqi;
-  nodeData[node].rssiHearingWindow[nodeData[node].placeholder] = rssi;
-  nodeData[node].sDataHearingWindow[nodeData[node].placeholder] = sensor;  
-  nodeData[node].placeholder = (nodeData[node].placeholder+1) % 50;
-}
-
-
-//look at hearing windows, choose lqi or rssi, and convert to distance
-float calcDist(int nodeA){
-  
-}
-
-void avgDist(int node){ //may not be necessary
-}
-
-float getDist(int nodeA){
-  return nodeData[nodeA].dist;
-}
-
-float getSensorData(int nodeA){ // will this average sensor data from sesnor hearing window?
-}
-
-*/
-#include "cc2500_REG.h"
-#include "cc2500_VAL.h"
+#include "cc2500_REG_V2.h"
+#include "cc2500_VAL_V2.h"
+#include "cc2500init_V2.h"
+#include "read_write.h"
 
 #include <SPI.h>
 
@@ -84,7 +13,7 @@ float getSensorData(int nodeA){ // will this average sensor data from sesnor hea
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
-#define CC2500_SRES    0x30 // reset strobe 
+#define CC2500_SRES    0x30       // reset strobe 
 
 #define myName         0x00
 #define broadCast      0xFF
@@ -102,21 +31,16 @@ unsigned char TP[7] = {7, myName, broadCast,'H','I',0,0};
 void setup(){
   Serial.begin(9600);
   
+  SPI.setClockDivider(SPI_CLOCK_DIV2);
+  
   // Setup 
   pinMode(SS,OUTPUT);
   SPI.begin();
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
   SendStrobe(CC2500_SRES);
-  init_CC2500();
+  init_CC2500_V2();  
   Read_Config_Regs(); 
-  SendStrobe(CC2500_SRES);
-  Serial.println("Initializing Wireless..");
-  Read_Config_Regs();
-  init_CC2500();
-  Serial.println("Initializing Wireless..");
-  Read_Config_Regs();
-  startPacket();
 }
 
 void loop(){
@@ -227,46 +151,6 @@ void listenForPacket() {
   } 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void WriteReg(char addr, char value){
-  digitalWrite(SS,LOW);
-  
-  while (digitalRead(MISO) == HIGH) {
-    };
-    
-  SPI.transfer(addr);
-  delay(10);
-  SPI.transfer(value);
-  digitalWrite(SS,HIGH);
-}
-
-char ReadReg(char addr){
-  addr = addr + 0x80;
-  digitalWrite(SS,LOW);
-  while (digitalRead(MISO) == HIGH) {
-    };
-  char x = SPI.transfer(addr);
-  delay(10);
-  char y = SPI.transfer(0);
-  digitalWrite(SS,HIGH);
-  return y;  
-}
-
 char SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
@@ -279,85 +163,6 @@ char SendStrobe(char strobe){
   return result;
 }
 
-void init_CC2500(){
-  WriteReg(0x3E,0xFF);
-  WriteReg(REG_IOCFG2,0x06);
-  WriteReg(REG_IOCFG0,0x01);
-  //WriteReg(REG_IOCFG1,0x0E);
-  WriteReg(REG_IOCFG1,0x06);
-
-  //WriteReg(REG_FIFOTHR,VAL_FIFOTHR);
-  WriteReg(REG_FIFOTHR, 0x02);                     //Rx and Tx FIFO threshold
-  WriteReg(REG_SYNC1,VAL_SYNC1);                   //Sync word, high byte //a syncword, sync character or preamble is used to synchronize a transmission by indicating the end of header information and the start of data. It is a known sequence of data used to identify frame start, also called reference signal or midamble in wireless communications.   
-  WriteReg(REG_SYNC0,VAL_SYNC0);                   //Sync word, low byte
-  WriteReg(REG_PKTLEN,VAL_PKTLEN);                 //packet length
-  //WriteReg(REG_PKTLEN, 0x06);
-  WriteReg(REG_PKTCTRL1,0x8C);                     //packet1 automation control // no address check, RSSI LQI append, auto flush when crc not ok // 0xC6 address check, LQI RSSI append, auto flush off on crc fail
-  //WriteReg(REG_PKTCTRL0,VAL_PKTCTRL0);
-  WriteReg(REG_PKTCTRL0, 0x0D);                    //packet0 automation control //0x0D Variable packet length: Packet length configured by the first byte after sync word, CRC calculation in TX and CRC check in RX enabled, Normal mode: use FIFOs for RX and TX. 0x46 will add whiting (dc balance) and turn off support for 2400
-  
-  WriteReg(REG_ADDR,VAL_ADDR);                     //Device Address use for packet filtration
-  WriteReg(REG_CHANNR,VAL_CHANNR);                 //8-bit unsigned channel number
-  WriteReg(REG_FSCTRL1,VAL_FSCTRL1);               //fequency synthesizer control IF frequency to employ in RX. Probably don't change. but the default is 0x0F
-  WriteReg(REG_FSCTRL0,VAL_FSCTRL0);               //Frequency offset added to the base frequency before being used by the FS. (2’s complement).
-  WriteReg(REG_FREQ2,VAL_FREQ2);                   //FREQ[23:0] is the base frequency for the frequency synthesiser in increments of FXOSC/216
-  WriteReg(REG_FREQ1,VAL_FREQ1);
-  WriteReg(REG_FREQ0,VAL_FREQ0);
-  /*WriteReg(REG_MDMCFG4,0x8C);
-  WriteReg(REG_MDMCFG3,0x32);
-  WriteReg(REG_MDMCFG1,0x72); */
-  WriteReg(REG_MDMCFG4,VAL_MDMCFG4);               // bandwidth
-  WriteReg(REG_MDMCFG3,VAL_MDMCFG3);               // data rate //note: increasing the data rate decreases the receiver sensitivity and might not be able to use FSK modulation format (which may or may not be an issue)
-  WriteReg(REG_MDMCFG2,VAL_MDMCFG2);               // 30/32 sync word bits detected //what's odd about this is that the each sync word is one byte totalling 16 so why the 30/32 check? condsider 0x02 16/16 synce words detected     
-  WriteReg(REG_MDMCFG1,VAL_MDMCFG1);               // 
-  WriteReg(REG_MDMCFG0,VAL_MDMCFG0);               //channel spacing
-  WriteReg(REG_DEVIATN,VAL_DEVIATN);
-  WriteReg(REG_MCSM2,VAL_MCSM2);
-  WriteReg(REG_MCSM1,VAL_MCSM1);
-  WriteReg(REG_MCSM0,VAL_MCSM0);
-  WriteReg(REG_FOCCFG,VAL_FOCCFG);
-
-  WriteReg(REG_BSCFG,VAL_BSCFG);
-  WriteReg(REG_AGCCTRL2,0x00);
-  WriteReg(REG_AGCCTRL1,0x40);
-  //WriteReg(REG_AGCCTRL2,VAL_AGCCTRL2);
-  //WriteReg(REG_AGCCTRL1,VAL_AGCCTRL1);
-  WriteReg(REG_AGCCTRL0,VAL_AGCCTRL0);
-  WriteReg(REG_WOREVT1,VAL_WOREVT1);
-  WriteReg(REG_WOREVT0,VAL_WOREVT0);                        
-  WriteReg(REG_WORCTRL,0x78);                   //Wake On Radio Control
-  WriteReg(REG_FREND1,VAL_FREND1);              //Front End RX Configuration
-  WriteReg(REG_FREND0,VAL_FREND0);              // Adjusts current TX LO buffer (input to PA). The value to use in this field is given by the SmartRF. Selects PA power setting. This value is an index to the PATABLE.
-  WriteReg(REG_FSCAL3,VAL_FSCAL3);
-  WriteReg(REG_FSCAL2,VAL_FSCAL2);
-  WriteReg(REG_FSCAL1,VAL_FSCAL1);              //
-  WriteReg(REG_FSCAL0,VAL_FSCAL0);              //Frequency synthesizer calibration control. The value to use in this register is given by the SmartRF
-  WriteReg(REG_RCCTRL1,VAL_RCCTRL1);            //RC oscillator configuration.
-  WriteReg(REG_RCCTRL0,VAL_RCCTRL0);            //RC oscillator configuration.
-  WriteReg(REG_FSTEST,VAL_FSTEST);              //For test only. Do not write to this register.
-  WriteReg(REG_PTEST,VAL_PTEST);                //Writing 0xBF to this register makes the on-chip temperature sensor available in the IDLE state. The default 0x7F value should then be written back before leaving the IDLE state. Other use of this register is for test only.
-  WriteReg(REG_AGCTEST,VAL_AGCTEST);            //For test only. Do not write to this register.
-  WriteReg(REG_TEST2,VAL_TEST2);                //Set to 0x81 for improved sensitivity at data rates ≤100 kBaud. The temperature range is then from 0oC to +85oC.
-  WriteReg(REG_TEST1,VAL_TEST1);                //Set to 0x35 for improved sensitivity at data rates ≤100 kBaud. The temperature range is then from 0oC to +85oC.  
-  WriteReg(REG_TEST0,VAL_TEST0);                // Set by smartRF studio
-/*  
-  WriteReg(REG_PARTNUM,VAL_PARTNUM);
-  WriteReg(REG_VERSION,VAL_VERSION);
-  WriteReg(REG_FREQEST,VAL_FREQEST);
-  WriteReg(REG_LQI,VAL_LQI);
-  WriteReg(REG_RSSI,VAL_RSSI);
-  WriteReg(REG_MARCSTATE,VAL_MARCSTATE);
-  WriteReg(REG_WORTIME1,VAL_WORTIME1);
-  WriteReg(REG_WORTIME0,VAL_WORTIME0);
-  WriteReg(REG_PKTSTATUS,VAL_PKTSTATUS);
-  WriteReg(REG_VCO_VC_DAC,VAL_VCO_VC_DAC);
-  WriteReg(REG_TXBYTES,VAL_TXBYTES);
-  WriteReg(REG_RXBYTES,VAL_RXBYTES);
-  WriteReg(REG_RCCTRL1_STATUS,VAL_RCCTRL1_STATUS);
-  WriteReg(REG_RCCTRL0_STATUS,VAL_RCCTRL0_STATUS);
-  */
-}
-
 void Read_Config_Regs(void){ 
   Serial.println(ReadReg(REG_IOCFG2),HEX);
    delay(10);
@@ -365,123 +170,6 @@ void Read_Config_Regs(void){
    delay(10);
   Serial.println(ReadReg(REG_IOCFG0),HEX);
    delay(10);
-/* Serial.println(ReadReg(REG_FIFOTHR),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_SYNC1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_SYNC0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_PKTLEN),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_PKTCTRL1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_PKTCTRL0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_ADDR),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_CHANNR),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCTRL1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCTRL0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FREQ2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FREQ1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FREQ0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MDMCFG4),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MDMCFG3),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MDMCFG2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MDMCFG1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MDMCFG0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_DEVIATN),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MCSM2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MCSM1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_MCSM0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FOCCFG),HEX);
-   delay(10);
-
-  Serial.println(ReadReg(REG_BSCFG),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_AGCCTRL2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_AGCCTRL1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_AGCCTRL0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_WOREVT1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_WOREVT0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_WORCTRL),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FREND1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FREND0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCAL3),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCAL2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCAL1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSCAL0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_RCCTRL1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_RCCTRL0),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_FSTEST),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_PTEST),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_AGCTEST),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_TEST2),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_TEST1),HEX);
-   delay(10);
-  Serial.println(ReadReg(REG_TEST0),HEX);
-   delay(10);
- /*
-  Serial.println(ReadReg(REG_PARTNUM),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_VERSION),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_FREQEST),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_LQI),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_RSSI),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_MARCSTATE),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_WORTIME1),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_WORTIME0),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_PKTSTATUS),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_VCO_VC_DAC),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_TXBYTES),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_RXBYTES),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_RCCTRL1_STATUS),HEX);
-   delay(1000);
-  Serial.println(ReadReg(REG_RCCTRL0_STATUS),HEX);
-   delay(1000);
-*/  
+  Serial.println(ReadReg(0x3E),HEX);
+   delay(1000000);
 }

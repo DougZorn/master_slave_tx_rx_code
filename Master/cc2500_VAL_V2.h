@@ -22,6 +22,8 @@
  PA table
 */
 
+#ifndef CC2500_VAL_V2_H
+#define CC2500_VAL_V2_H
  
 #define PA_TABLE {0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,}
 #define VAL_IOCFG2            0x0B    //GDO2Output Pin Configuration 
@@ -85,3 +87,5 @@
 #define VAL_RXBYTES           0x00    //Underflow and Number of Bytes 
 #define VAL_RCCTRL1_STATUS    0x00    //Last RC Oscillator Calibration Result 
 #define VAL_RCCTRL0_STATUS    0x00    //Last RC Oscillator Calibration Result 
+
+#endif
