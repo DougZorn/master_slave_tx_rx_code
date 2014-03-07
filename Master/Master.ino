@@ -110,6 +110,12 @@ void setup(){
   SendStrobe(CC2500_SRES);
   init_CC2500();
   Read_Config_Regs(); 
+  SendStrobe(CC2500_SRES);
+  Serial.println("Initializing Wireless..");
+  Read_Config_Regs();
+  init_CC2500();
+  Serial.println("Initializing Wireless..");
+  Read_Config_Regs();
   startPacket();
 }
 
