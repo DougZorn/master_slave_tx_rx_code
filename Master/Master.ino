@@ -22,7 +22,7 @@
 #define myName         0x00
 #define broadCast      0xFF
 #define finish         1
-
+const int GDO2_PIN = 2;
 
 #define TX_TIMEOUT 10 // in milliseconds
 long previousTXTimeoutMillis = 0;
@@ -30,12 +30,17 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {5, 0x05, 'H','E','L','L','O'};
+char TP[] = {5, 0x05, 'H','E','L','L','O'}; //packet length(only includes data), device adress, data 
 
 void setup(){
   Serial.begin(9600);
   
   SPI.setClockDivider(SPI_CLOCK_DIV2);
+  //SPI_MODE0
+  //SPI_MODE1
+  //SPI_MODE2
+  //SPI_MODE3  
+  SPI.setDataMode(SPI_MODE0);
   
   // Setup 
   pinMode(SS,OUTPUT);
@@ -47,13 +52,11 @@ void setup(){
   Read_Config_Regs(); 
 }
 
-void loop(){  
-  unsigned long currentMillis = millis();
-  if(currentMillis - previousMillis > sendInterval) {
-    previousMillis = currentMillis;   
+  void loop()
+  {  
     sendPacket(7, TP);
+    delay(400);
   } 
-}
 
 void sendPacket(byte count, char TP[]){
   WriteReg(REG_IOCFG1,0x06);
@@ -65,14 +68,16 @@ void sendPacket(byte count, char TP[]){
 
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
   SendStrobe(CC2500_TX);
-  Serial.println("test");
   
+  /*
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {
   }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
-  }  
+  } 
+  */
+  
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);
 }
@@ -112,16 +117,13 @@ void listenForPacket() {
   } 
 }
 
-char SendStrobe(char strobe){
+void SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
   while (digitalRead(MISO) == HIGH) {
-  };
-    
-  char result =  SPI.transfer(strobe);
-  digitalWrite(SS,HIGH);
-  //delay(10);
-  return result;
+  };    
+  SPI.transfer(strobe);
+  digitalWrite(SS,HIGH);    
 }
 
 void Read_Config_Regs(void){ 

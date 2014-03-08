@@ -26,7 +26,7 @@
 #define CC2500_VAL_V2_H
  
 #define PA_TABLE {0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00}
-#define VAL_IOCFG2            0x0B    //GDO2Output Pin Configuration 
+#define VAL_IOCFG2            0x06    //GDO2Output Pin Configuration
 #define VAL_IOCFG1            0x06    //GDO1Output Pin Configuration 
 #define VAL_IOCFG0            0x0C    //GDO0Output Pin Configuration 
 #define VAL_FIFOTHR           0x07    //RX FIFO and TX FIFO Thresholds

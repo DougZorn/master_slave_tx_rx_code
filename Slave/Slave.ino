@@ -31,18 +31,15 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0x05, 'H','E','L','L','O'};
 
-void setup(){
-  Serial.begin(9600);
-  
-  SPI.setClockDivider(SPI_CLOCK_DIV2);
   
   // Setup 
   pinMode(SS,OUTPUT);
   SPI.begin();
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
+  SPI.setClockDivider(SPI_CLOCK_DIV2);
+  SPI.setDataMode(SPI_MODE0);
   SendStrobe(CC2500_SRES);
   init_CC2500_V2();  
   Read_Config_Regs(); 
