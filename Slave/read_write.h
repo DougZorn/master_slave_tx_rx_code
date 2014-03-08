@@ -24,7 +24,7 @@ void WriteReg_burst(char addr, char value[], byte count)
   for(byte i = 0; i<count; i++)
   {
     SPI.transfer(value[i]);
-    delayMicroseconds(10);
+    delayMicroseconds(200);
   }
   digitalWrite(SS,HIGH);  
 }
