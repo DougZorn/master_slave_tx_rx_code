@@ -31,7 +31,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0xFF, 'H','E','L','L','O'};
+char TP[] = {6, 0x05, 'H','E','L','L','O'};
 
 void setup(){
   Serial.begin(9600);

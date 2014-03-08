@@ -8,7 +8,7 @@
  Whitening = true 
  Address config = Address check and 0 (0x00) broadcast 
  Carrier frequency = 2433.599762 
- Device address = 255 
+ Device address = 0x05 
  TX power = 1 
  Manchester enable = false 
  CRC enable = true 
@@ -33,9 +33,9 @@
 #define VAL_SYNC1             0xD3    //Sync Word, High Byte 
 #define VAL_SYNC0             0x91    //Sync Word, Low Byte 
 #define VAL_PKTLEN            0xFF    //Packet Length 
-#define VAL_PKTCTRL1          0x05    //Packet Automation Control
+#define VAL_PKTCTRL1          0x07    //Packet Automation Control
 #define VAL_PKTCTRL0          0x45    //Packet Automation Control //Variable Packet length, Whitening on, cc2400 support off, CRC check
-#define VAL_ADDR              0xFF    //Device Address 
+#define VAL_ADDR              0x05    //Device Address 
 #define VAL_CHANNR            0x03    //Channel Number 
 #define VAL_FSCTRL1           0x08    //Frequency Synthesizer Control 
 #define VAL_FSCTRL0           0x00    //Frequency Synthesizer Control 
