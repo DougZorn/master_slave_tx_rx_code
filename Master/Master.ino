@@ -30,7 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0xFF, 'H','E','L','L','O'};
+char TP[] = {5, 0xFF, 'H','E','L','L','O'};
 
 void setup(){
   Serial.begin(9600);
@@ -120,7 +120,7 @@ char SendStrobe(char strobe){
     
   char result =  SPI.transfer(strobe);
   digitalWrite(SS,HIGH);
-  delay(10);
+  //delay(10);
   return result;
 }
 

@@ -19,12 +19,13 @@ void WriteReg_burst(char addr, char value[], byte count)
   digitalWrite(SS,LOW);  
   while (digitalRead(MISO) == HIGH) {
   };
-  SPI.transfer(addr);  
-  delay(1);
+  SPI.transfer(addr);
+  delayMicroseconds(10);  
+  //delay(1);
   for(byte i = 0; i<count; i++)
   {
     SPI.transfer(value[i]);
-    delayMicroseconds(10);
+    //delayMicroseconds(10);
   }
   digitalWrite(SS,HIGH);  
 }
