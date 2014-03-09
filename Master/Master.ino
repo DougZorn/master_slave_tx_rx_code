@@ -67,16 +67,21 @@ void sendPacket(byte count, char TP[]){
   SendStrobe(CC2500_IDLE);
 
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
+  
+  //Serial.println(ReadReg(0x3A),HEX);  
+  //Serial.println(ReadReg(0x3B),HEX);
+  
+  
   SendStrobe(CC2500_TX);
   
-  /*
+  
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {
   }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
   } 
-  */
+  
   
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);

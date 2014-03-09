@@ -31,16 +31,21 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
+char TP[] = {5, 0x05, 'H','E','L','L','O'};
 
+void setup(){
+  Serial.begin(9600);
+  
+  SPI.setClockDivider(SPI_CLOCK_DIV2);
   
   // Setup 
   pinMode(SS,OUTPUT);
   SPI.begin();
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
-  SPI.setClockDivider(SPI_CLOCK_DIV2);
-  SPI.setDataMode(SPI_MODE0);
   SendStrobe(CC2500_SRES);
+  //Serial.println(ReadReg(0x3A),HEX);  
+  //Serial.println(ReadReg(0x3B),HEX);
   init_CC2500_V2();  
   Read_Config_Regs(); 
 }
@@ -50,6 +55,8 @@ void loop(){
   //if(currentMillis - previousMillis > sendInterval) {
   //  previousMillis = currentMillis;   
   //sendPacket(7, TP);
+  //Serial.println(ReadReg(0x3A),HEX);  
+  //Serial.println(ReadReg(0x3B),HEX);
   Serial.println("In main loop waiting to listen");
   listenForPacket();   
 }
@@ -77,11 +84,13 @@ void sendPacket(byte count, char TP[]){
 }
 
 void listenForPacket() {
-  WriteReg(REG_IOCFG2,0x06);
+  WriteReg(REG_IOCFG2,0x07);
   SendStrobe(CC2500_RX);  
   delayMicroseconds(100);
   //unsigned long currentMillis = millis();  
   while (true){
+    //Serial.println(ReadReg(0x3A),HEX);  
+    //Serial.println(ReadReg(0x3B),HEX);
     if (digitalRead(GDO2_PIN)){
       Serial.println("Packet Received!");
       break;

@@ -14,7 +14,7 @@ void init_CC2500_V2(){
 	WriteReg(REG_FIFOTHR,VAL_FIFOTHR);              //rx fifo and tx fifo thresholds
 	WriteReg(REG_SYNC1,VAL_SYNC1);                  //sync word, high byte 
 	WriteReg(REG_SYNC0,VAL_SYNC0);                  //sync word, low byte 
-	WriteReg(REG_PKTLEN,VAL_PKTLEN);                //packet length 
+	WriteReg(REG_PKTLEN,VAL_PKTLEN);                //packet length: This is max legnth when PKTCTRL0 = 1 
 	WriteReg(REG_PKTCTRL1,VAL_PKTCTRL1);            //packet automation control
 	WriteReg(REG_PKTCTRL0,VAL_PKTCTRL0);            //packet automation control
 	WriteReg(REG_ADDR,VAL_ADDR);                    //device address 
