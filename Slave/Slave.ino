@@ -24,19 +24,22 @@
 #define finish         1
 const int GDO2_PIN = 2;
 
-
 #define TX_TIMEOUT 10 // in milliseconds
 long previousTXTimeoutMillis = 0;
 long previousMillis = 0; 
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {5, 0x05, 'H','E','L','L','O'};
+char TP[] = {5, 0x05, 'H','E','L','L','O'}; //packet length(only includes data), device adress, data 
 
 void setup(){
   Serial.begin(9600);
   
   SPI.setClockDivider(SPI_CLOCK_DIV2);
+  //SPI_MODE0
+  //SPI_MODE1
+  //SPI_MODE2
+  //SPI_MODE3  
   SPI.setDataMode(SPI_MODE0);
   
   // Setup 
@@ -45,23 +48,16 @@ void setup(){
   digitalWrite(SS,HIGH);
   Serial.println("Initializing Wireless..");
   SendStrobe(CC2500_SRES);
-  //Serial.println(ReadReg(0x3A),HEX);  
-  //Serial.println(ReadReg(0x3B),HEX);
   init_CC2500_V2();  
   Read_Config_Regs(); 
 }
 
-void loop(){  
-  //unsigned long currentMillis = millis();
-  //if(currentMillis - previousMillis > sendInterval) {
-  //  previousMillis = currentMillis;   
-  //sendPacket(7, TP);
-  //Serial.println(ReadReg(0x3A),HEX);  
-  //Serial.println(ReadReg(0x3B),HEX);
-  Serial.println("In main loop waiting to listen");
-  listenForPacket(); 
-  delay(400);  
-}
+  void loop()
+  {  
+    //sendPacket(7, TP);
+    listenForPacket();
+    delay(400);
+  } 
 
 void sendPacket(byte count, char TP[]){
   WriteReg(REG_IOCFG1,0x06);
@@ -72,66 +68,79 @@ void sendPacket(byte count, char TP[]){
   SendStrobe(CC2500_IDLE);
 
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
+  
+  //Serial.println(ReadReg(0x3A),HEX);  
+  //Serial.println(ReadReg(0x3B),HEX);
+  
+  
   SendStrobe(CC2500_TX);
-  Serial.println("test");
+  
   
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {
   }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
-  }  
+  } 
+  
+  
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);
 }
 
 void listenForPacket() {
-  delay(100);
-  SendStrobe(CC2500_IDLE);//36
-  SendStrobe(CC2500_FRX);//3A
-  SendStrobe(CC2500_RX); //34
-  
-  WriteReg(REG_IOCFG1,0x06);  
+  SendStrobe(CC2500_RX);
+  WriteReg(REG_IOCFG1,0x01);
   delay(20);
-  //unsigned long currentMillis = millis();
-
-  if (digitalRead(MISO)) {
-    for(int i = 0; i < 15; i++)
-    {  
-      Serial.println(ReadReg(CC2500_RXFIFO),HEX);
-    }  
+  unsigned long currentMillis = millis();
+  /*while (digitalRead(MISO)) {      
+    char PacketLength = ReadReg(CC2500_RXFIFO);
+    char recvPacket[PacketLength];
+    if(PacketLength == 7) {
+      Serial.println("Packet Received!");
+      Serial.print("Packet Length: ");
+      Serial.println(PacketLength, DEC);
+      Serial.print("Data: ");
+      for(int i = 1; i < PacketLength; i++){
+        recvPacket[i] = ReadReg(CC2500_RXFIFO);
+        Serial.print(recvPacket[i], DEC);
+        Serial.print(" ");
+      }
+      Serial.println(" ");
+      byte rssi = ReadReg(CC2500_RXFIFO);
+      byte lqi = ReadReg(CC2500_RXFIFO);
+      Serial.print("RSSI: ");
+      Serial.println(rssi);
+      Serial.print("LQI: ");
+      Serial.println(lqi);
+    }
   }
-    
+   */ 
     // Make sure that the radio is in IDLE state before flushing the FIFO
     // (Unless RXOFF_MODE has been changed, the radio should be in IDLE state at this point) 
-    //delay(20);
-    //SendStrobe(CC2500_IDLE);//thebug
-    
-    
-    //SendStrobe(CC2500_IDLE);
-    //SendStrobe(CC2500_IDLE);
+    SendStrobe(CC2500_IDLE);
     // Flush RX FIFO
-    //delay(20);
-    
+    SendStrobe(CC2500_FRX);
+   
 }
 
 void SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
   while (digitalRead(MISO) == HIGH) {
-  };
-    
-  SPI.transfer(strobe);  
+  };    
+  SPI.transfer(strobe);
   digitalWrite(SS,HIGH);
+  delay(10);  
 }
 
 void Read_Config_Regs(void){ 
   Serial.println(ReadReg(REG_IOCFG2),HEX);
-  delayMicroseconds(1);
+   delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG1),HEX);
-  delayMicroseconds(1);
+delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG0),HEX);
-  delayMicroseconds(1);
+delayMicroseconds(1);
   Serial.println(ReadReg(0x3E),HEX);
-  delay(100);
+   delay(100);
 }
