@@ -29,7 +29,7 @@
 #define VAL_IOCFG2            0x06    //GDO2Output Pin Configuration
 #define VAL_IOCFG1            0x06    //GDO1Output Pin Configuration 
 #define VAL_IOCFG0            0x0C    //GDO0Output Pin Configuration 
-#define VAL_FIFOTHR           0x07    //RX FIFO and TX FIFO Thresholds
+#define VAL_FIFOTHR           0x10    //RX FIFO and TX FIFO Thresholds
 #define VAL_SYNC1             0xD3    //Sync Word, High Byte 
 #define VAL_SYNC0             0x91    //Sync Word, Low Byte 
 #define VAL_PKTLEN            0xFF    //Packet Length: This is max legnth when PKTCTRL0 = 1 

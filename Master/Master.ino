@@ -30,7 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {5, 0x05, 'H','E','L','L','O'}; //packet length(only includes data), device adress, data 
+char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data 
 
 void setup(){
   Serial.begin(9600);
@@ -122,22 +122,13 @@ void listenForPacket() {
   } 
 }
 
-void SendStrobe(char strobe){
-  digitalWrite(SS,LOW);
-  
-  while (digitalRead(MISO) == HIGH) {
-  };    
-  SPI.transfer(strobe);
-  digitalWrite(SS,HIGH);    
-}
-
-void Read_Config_Regs(void){ 
+void Read_Config_Regs(void)
+{ 
   Serial.println(ReadReg(REG_IOCFG2),HEX);
-   delayMicroseconds(1);
+  delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG1),HEX);
-delayMicroseconds(1);
+  delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG0),HEX);
-delayMicroseconds(1);
-  Serial.println(ReadReg(0x3E),HEX);
-   delay(100);
+  delayMicroseconds(1);
+  Serial.println(ReadReg(0x3E),HEX);  
 }
