@@ -34,7 +34,7 @@
 #define VAL_SYNC0             0x91    //Sync Word, Low Byte 
 #define VAL_PKTLEN            0xFF    //Packet Length: This is max legnth when PKTCTRL0 = 1 
 #define VAL_PKTCTRL1          0x0F    //Packet Automation Control
-#define VAL_PKTCTRL0          0x45    //Packet Automation Control //Variable Packet length, Whitening on, cc2400 support off, CRC check
+#define VAL_PKTCTRL0          0x05    //Packet Automation Control //Variable Packet length, Whitening off, cc2400 support off, CRC check
 #define VAL_ADDR              0x05    //Device Address 
 #define VAL_CHANNR            0x03    //Channel Number 
 #define VAL_FSCTRL1           0x08    //Frequency Synthesizer Control 

@@ -37,6 +37,7 @@ void setup(){
   Serial.begin(9600);
   
   SPI.setClockDivider(SPI_CLOCK_DIV2);
+  SPI.setDataMode(SPI_MODE0);
   
   // Setup 
   pinMode(SS,OUTPUT);
@@ -58,7 +59,8 @@ void loop(){
   //Serial.println(ReadReg(0x3A),HEX);  
   //Serial.println(ReadReg(0x3B),HEX);
   Serial.println("In main loop waiting to listen");
-  listenForPacket();   
+  listenForPacket(); 
+  delay(400);  
 }
 
 void sendPacket(byte count, char TP[]){
@@ -84,36 +86,43 @@ void sendPacket(byte count, char TP[]){
 }
 
 void listenForPacket() {
-  WriteReg(REG_IOCFG2,0x07);
-  SendStrobe(CC2500_RX);  
-  delayMicroseconds(100);
-  //unsigned long currentMillis = millis();  
-  while (true){
-    //Serial.println(ReadReg(0x3A),HEX);  
-    //Serial.println(ReadReg(0x3B),HEX);
-    if (digitalRead(GDO2_PIN)){
-      Serial.println("Packet Received!");
-      break;
-    }
-  }  
+  delay(100);
+  SendStrobe(CC2500_IDLE);//36
+  SendStrobe(CC2500_FRX);//3A
+  SendStrobe(CC2500_RX); //34
+  
+  WriteReg(REG_IOCFG1,0x06);  
+  delay(20);
+  //unsigned long currentMillis = millis();
+
+  if (digitalRead(MISO)) {
+    for(int i = 0; i < 15; i++)
+    {  
+      Serial.println(ReadReg(CC2500_RXFIFO),HEX);
+    }  
+  }
     
     // Make sure that the radio is in IDLE state before flushing the FIFO
     // (Unless RXOFF_MODE has been changed, the radio should be in IDLE state at this point) 
-    SendStrobe(CC2500_IDLE);
+    //delay(20);
+    //SendStrobe(CC2500_IDLE);//thebug
+    
+    
+    //SendStrobe(CC2500_IDLE);
+    //SendStrobe(CC2500_IDLE);
     // Flush RX FIFO
-    SendStrobe(CC2500_FRX);
+    //delay(20);
+    
 }
 
-char SendStrobe(char strobe){
+void SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
   while (digitalRead(MISO) == HIGH) {
   };
     
-  char result =  SPI.transfer(strobe);
+  SPI.transfer(strobe);  
   digitalWrite(SS,HIGH);
-  delay(10);
-  return result;
 }
 
 void Read_Config_Regs(void){ 

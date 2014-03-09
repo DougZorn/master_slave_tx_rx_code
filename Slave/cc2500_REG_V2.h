@@ -32,7 +32,7 @@
 #define REG_FIFOTHR               0x0003    //RX FIFO and TX FIFO Thresholds
 #define REG_SYNC1                 0x0004    //Sync Word, High Byte 
 #define REG_SYNC0                 0x0005    //Sync Word, Low Byte 
-#define REG_PKTLEN                0x0006    //Packet Length 
+#define REG_PKTLEN                0x0006    //Packet Length: This is max legnth when PKTCTRL0 = 1 
 #define REG_PKTCTRL1              0x0007    //Packet Automation Control
 #define REG_PKTCTRL0              0x0008    //Packet Automation Control
 #define REG_ADDR                  0x0009    //Device Address 
