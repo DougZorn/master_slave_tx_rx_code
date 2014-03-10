@@ -135,7 +135,8 @@ void listenForPacket() {
     Serial.println("CRC PASSED");
     for(int i = 0; i < 8; i++)
     {
-      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
+      Serial.write(ReadReg(CC2500_RXFIFO)); 
+      Serial.println(" ");
     }    
   }  
   SendStrobe(CC2500_IDLE);  
