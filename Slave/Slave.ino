@@ -56,7 +56,7 @@ void loop()
 {  
   //sendPacket(7, TP);
   listenForPacket();
-  //delay(500);
+  delay(500);
 } 
 
 void sendPacket(byte count, char TP[]){
@@ -96,40 +96,48 @@ void listenForPacket() {
 //CC2500_FRX    0x3A Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
 //CC2500_SWOR   0x38
 //CC2500_TXFIFO 0x3F
-//CC2500_RXFIFO 0x3F
-
+//CC2500_RXFIFO 0x3F 
   
-  
-  Serial.println("START LISTEN");
+  //Serial.println("START LISTEN");
   WriteReg(REG_IOCFG2,0x06);  
-  Serial.println("IOCFG1 written");
+  //Serial.println("IOCFG1 written");
   SendStrobe(CC2500_IDLE); //36
-  Serial.println("IDLE top written");  
-  SendStrobe(CC2500_FRX); //3A
-  Serial.println("FRX written");  
+  //Serial.println("IDLE top written");  
+  //SendStrobe(CC2500_FRX); //3A   ERRATA NOTES
+  SendStrobe(CC2500_FRX);
+  //Serial.println("FRX written");  
   SendStrobe(CC2500_RX);  //34
-  Serial.println("RX written");   
+  //Serial.println("RX written");   
   //I get to this point and the GDO_2 never deassertes but it should
   
-  while(digitalRead(2))   // with GDO_2 = 6 asserted when received and deasserted when end of packet. !!!!!!Wne should never empty (read REG the FIFO) the RX FIFO before the last byte of the packet is received!!!!!!!!!!!!!!!!!!!
+  while(!digitalRead(2))   // with GDO_2 = 6 asserted when received and deasserted when end of packet. !!!!!!Wne should never empty (read REG the FIFO) the RX FIFO before the last byte of the packet is received!!!!!!!!!!!!!!!!!!!
   {
      
   }
-  Serial.println("?START OF PACKET?");
-  Serial.println("?END OF PACKET?");
+  while(digitalRead(2)) 
+  {
+     
+  }
   
-  if(ReadReg(0x3B))
+  Serial.println("PACKET Received");  
+  Serial.println(ReadReg(0xFB),HEX);
+  if(ReadReg(0xFB))//number of bytes in RX FIFO 
   {
     Serial.println("CRC FAILED");     
   }
-  else Serial.println("CRC PASSED");
-  
+  else
+  {
+    Serial.println("CRC PASSED");
+    for(int i = 0; i < 8; i++)
+    {
+      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
+    }    
+  }
+  SendStrobe(CC2500_FRX);  
   SendStrobe(CC2500_IDLE);  
-  Serial.println("IDLE bottom");
-  SendStrobe(CC2500_FRX); // this is causing the freeze?
-  Serial.println("END LISTEN");
-  
-  
+  //Serial.println("IDLE bottom");
+  SendStrobe(CC2500_FRX);
+  //Serial.println("END LISTEN");  
 }
 
 void Read_Config_Regs(void){ 

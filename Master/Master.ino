@@ -48,7 +48,7 @@ void setup(){
 void loop()
 {    
   sendPacket(8, TP); // 8 is the whole array    
-  delay(400);
+  delay(10000);
 } 
 
 void sendPacket(byte count, char TP[]){
