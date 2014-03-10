@@ -30,8 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data 
-
+char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data I AM NOT SURE OF THE APPEND ON RX SIDE OF RSSI AND LQI INCLUDE THE LENGTH
 void setup(){
   Serial.begin(9600);
   

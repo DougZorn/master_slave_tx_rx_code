@@ -30,7 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {5, 0x05, 'H','E','L','L','O'}; //packet length(only includes data), device adress, data 
+char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data 
 
 void setup()
 {
@@ -56,7 +56,7 @@ void loop()
 {  
   //sendPacket(7, TP);
   listenForPacket();
-  delay(500);
+  //delay(500);
 } 
 
 void sendPacket(byte count, char TP[]){
@@ -108,51 +108,34 @@ void listenForPacket() {
   SendStrobe(CC2500_FRX); //3A
   Serial.println("FRX written");  
   SendStrobe(CC2500_RX);  //34
-  Serial.println("RX written");  
-  char z;
-  //while(digitalRead(2))
-  //{
-  //  Serial.println("entered loop");
-  //  Serial.println(ReadReg(CC2500_RXFIFO),HEX);   
-  //  //z = ReadReg(CC2500_RXFIFO);
-  //} 
+  Serial.println("RX written");   
+  char x;
   
-  while(!digitalRead(2))
+  while(true)
   {
-  }
-  int PacketLength = ReadReg(CC2500_RXFIFO);
-  unsigned char recvPacket[PacketLength];
-  while(digitalRead(2)){
-  }  
-    
-  Serial.println("GDO2 unasserted and loop exited");   
-  
-  for(int i = 0; i < PacketLength;i++)
-  {
-    recvPacket[ReadReg(CC2500_RXFIFO)];
+    ReadReg(0x3B);
   }
   
-  for(int i = 0; i < PacketLength;i++)
+  
+  while(digitalRead(2))
   {
-    Serial.println(recvPacket[i],HEX);
+     Serial.println("ASSERTED");
   }
+  x = ReadReg(0x3B);
+  Serial.println(x,DEC);
+  if(x)
+  {
+    Serial.println("CRC FAILED");     
+  }
+  else Serial.println("CRC PASSED");
   
   
   SendStrobe(CC2500_IDLE);  
   Serial.println("IDLE bottom");
   SendStrobe(CC2500_FRX); // this is causing the freeze?
   Serial.println("END LISTEN");
-  //delay(20);   
-}
-
-void SendStrobe(char strobe){
-  digitalWrite(SS,LOW);
   
-  while (digitalRead(MISO) == HIGH) {
-  };    
-  SPI.transfer(strobe);
-  digitalWrite(SS,HIGH);
-  delay(10);  
+  
 }
 
 void Read_Config_Regs(void){ 
