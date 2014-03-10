@@ -12,7 +12,7 @@
 #define CC2500_FRX     0x3A      // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
-#define CC2500_RXFIFO  0x3F
+#define CC2500_RXFIFO  0xBF
 
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
@@ -52,8 +52,10 @@ void setup(){
 }
 
   void loop()
-  {  
-    sendPacket(7, TP);
+  { 
+    
+    sendPacket(8, TP); // 8 is the whole array
+    
     delay(400);
   } 
 
@@ -63,25 +65,17 @@ void sendPacket(byte count, char TP[]){
   SendStrobe(CC2500_IDLE);
   // Flush TX FIFO
   SendStrobe(CC2500_FTX); 
-  SendStrobe(CC2500_IDLE);
+  //SendStrobe(CC2500_IDLE); Do I need to go to idle and
+  
+  WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);  
 
-  WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
-  
-  //Serial.println(ReadReg(0x3A),HEX);  
-  //Serial.println(ReadReg(0x3B),HEX);
-  
-  
-  SendStrobe(CC2500_TX);
-  
-  
+  SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions  
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {
   }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
-  } 
-  
-  
+  }  
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);
 }
