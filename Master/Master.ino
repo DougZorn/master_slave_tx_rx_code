@@ -57,13 +57,14 @@ void sendPacket(byte count, char TP[]){
   //Make sure that the radio is in IDLE state before flushing the FIFO  
   //Serial.println(15&ReadReg(0xF5),DEC); 
   //Flush TX FIFO  
-  
+  //SendStrobe(CC2500_RX);
   SendStrobe(CC2500_FTX); 
   Serial.println("flushed"); 
   //SendStrobe(CC2500_IDLE); //Do I need to go to idle?
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
   Serial.println("written");   
-  SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions  
+  SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions
+  ReadReg(REG_IOCFG1 );
   Serial.println("strobed"); 
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {  
@@ -72,7 +73,7 @@ void sendPacket(byte count, char TP[]){
   while (digitalRead(MISO)) {    
   }    
   Serial.println("Finished sending");
-  SendStrobe(CC2500_IDLE);  
+     SendStrobe(CC2500_IDLE); 
 }
 
 void listenForPacket() {

@@ -49,7 +49,18 @@ char ReadReg(char addr){
   digitalWrite(SS,HIGH);
   return y;  
 }
-
+char SendStrobe(char strobe){
+  digitalWrite(SS,LOW);
+  
+  while (digitalRead(MISO) == HIGH) {
+  };
+    
+  char result =  SPI.transfer(strobe);
+  digitalWrite(SS,HIGH);
+  delay(10);
+  return result;
+}
+/*
 char SendStrobe(char strobe){
   char x;
   delayMicroseconds(150);
@@ -61,5 +72,6 @@ char SendStrobe(char strobe){
   digitalWrite(SS,HIGH);    
   return x;
 }
+*/
 #endif
 
