@@ -29,7 +29,7 @@
 #define VAL_IOCFG2            0x06    //GDO2Output Pin Configuration
 #define VAL_IOCFG1            0x06    //GDO1Output Pin Configuration 
 #define VAL_IOCFG0            0x0C    //GDO0Output Pin Configuration 
-#define VAL_FIFOTHR           0x10    //RX FIFO and TX FIFO Thresholds RX: 4 bytes
+#define VAL_FIFOTHR           0x10    //RX FIFO and TX FIFO Thresholds
 #define VAL_SYNC1             0xD3    //Sync Word, High Byte 
 #define VAL_SYNC0             0x91    //Sync Word, Low Byte 
 #define VAL_PKTLEN            0xFF    //Packet Length: This is max legnth when PKTCTRL0 = 1 
@@ -44,7 +44,7 @@
 #define VAL_FREQ0             0xB1    //Frequency Control Word, Low Byte 
 #define VAL_MDMCFG4           0x86    //Modem Configuration 
 #define VAL_MDMCFG3           0x83    //Modem Configuration 
-#define VAL_MDMCFG2           0x02    //Modem Configuration
+#define VAL_MDMCFG2           0x0    //Modem Configuration
 #define VAL_MDMCFG1           0x22    //Modem Configuration
 #define VAL_MDMCFG0           0xF8    //Modem Configuration 
 #define VAL_DEVIATN           0x44    //Modem Deviation Setting 
@@ -89,3 +89,4 @@
 #define VAL_RCCTRL0_STATUS    0x00    //Last RC Oscillator Calibration Result 
 
 #endif
+

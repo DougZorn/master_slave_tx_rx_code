@@ -2,27 +2,30 @@
 #ifndef READ_WRITE_H
 #define READ_WRITE_H
 
-void WriteReg(char addr, char value) //see page 22 of cc2500 data sheet for timing
+char WriteReg(char addr, char value) //see page 22 of cc2500 data sheet for timing
 {
+  char x;
   digitalWrite(SS,LOW);
   delayMicroseconds(150);
   while (digitalRead(MISO) == HIGH)
   {
   };    
-  SPI.transfer(addr);
+  x = SPI.transfer(addr);
   delayMicroseconds(1);
   SPI.transfer(value);
   delayMicroseconds(1);
   digitalWrite(SS,HIGH);
+  return x;
 }
 
-void WriteReg_burst(char addr, char value[], byte count)
+char WriteReg_burst(char addr, char value[], byte count)
 {
+  char x;
   digitalWrite(SS,LOW);
   delayMicroseconds(150);  
   while (digitalRead(MISO) == HIGH) {
   };
-  SPI.transfer(addr);
+  x = SPI.transfer(addr);
   delayMicroseconds(1);    
   for(byte i = 0; i<count; i++)
   {
@@ -30,6 +33,7 @@ void WriteReg_burst(char addr, char value[], byte count)
   }
   delayMicroseconds(1);
   digitalWrite(SS,HIGH);  
+  return x;
 }
 
 char ReadReg(char addr){
@@ -46,13 +50,16 @@ char ReadReg(char addr){
   return y;  
 }
 
-void SendStrobe(char strobe){
+char SendStrobe(char strobe){
+  char x;
   delayMicroseconds(150);
   digitalWrite(SS,LOW);  
   while (digitalRead(MISO) == HIGH) {
   };  
-  SPI.transfer(strobe);
+  x = SPI.transfer(strobe);
   delayMicroseconds(1); 
   digitalWrite(SS,HIGH);    
+  return x;
 }
 #endif
+

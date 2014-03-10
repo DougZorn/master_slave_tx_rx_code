@@ -30,7 +30,7 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data 
+char TP[] = {7, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data 
 
 void setup()
 {
