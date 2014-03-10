@@ -119,6 +119,8 @@ void listenForPacket() {
      
   }
   
+  
+  
   Serial.println("PACKET Received");  
   Serial.println(ReadReg(0xFB),HEX);
   if(ReadReg(0xFB))//number of bytes in RX FIFO 
