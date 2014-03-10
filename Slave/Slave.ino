@@ -109,7 +109,7 @@ void listenForPacket() {
   SendStrobe(CC2500_RX);  //34
   //Serial.println("RX written");   
   //I get to this point and the GDO_2 never deassertes but it should
-  
+  /*
   while(!digitalRead(2))   // with GDO_2 = 6 asserted when received and deasserted when end of packet. !!!!!!Wne should never empty (read REG the FIFO) the RX FIFO before the last byte of the packet is received!!!!!!!!!!!!!!!!!!!
   {
      
@@ -118,23 +118,23 @@ void listenForPacket() {
   {
      
   }
-  
+  */
   
   
   Serial.println("PACKET Received");  
   Serial.println(ReadReg(0xFB),HEX);
-  if(ReadReg(0xFB))//number of bytes in RX FIFO 
+  /*if(ReadReg(0xFB))//number of bytes in RX FIFO 
   {
     Serial.println("CRC FAILED");     
   }
   else
-  {
+  {*/
     Serial.println("CRC PASSED");
     for(int i = 0; i < 8; i++)
     {
       Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
     }    
-  }
+  //}
   SendStrobe(CC2500_FRX);  
   SendStrobe(CC2500_IDLE);  
   //Serial.println("IDLE bottom");
