@@ -30,54 +30,47 @@ long previousMillis = 0;
 
 long sendInterval = 800; // in milliseconds
 
-char TP[] = {6, 0x05, 'H','E','L','L','O','!'}; //packet length(only includes data), device adress, data I AM NOT SURE OF THE APPEND ON RX SIDE OF RSSI AND LQI INCLUDE THE LENGTH
+char TP[] = {7, 0x05, 'H','E','L','L','O','!'}; //packet length (includes address and data), device adress 
 void setup(){
-  Serial.begin(9600);
-  
+  Serial.begin(9600);  
   SPI.setClockDivider(SPI_CLOCK_DIV2);
-  //SPI_MODE0
-  //SPI_MODE1
-  //SPI_MODE2
-  //SPI_MODE3  
-  SPI.setDataMode(SPI_MODE0);
-  
+  SPI.setDataMode(SPI_MODE0);  
   // Setup 
   pinMode(SS,OUTPUT);
   SPI.begin();
   digitalWrite(SS,HIGH);
+  Serial.println(15&ReadReg(0xF5),DEC); 
   Serial.println("Initializing Wireless..");
   SendStrobe(CC2500_SRES);
   init_CC2500_V2();  
-  Read_Config_Regs(); 
+  Read_Config_Regs();  
 }
-
-  void loop()
-  { 
-    
-    sendPacket(8, TP); // 8 is the whole array
-    
-    delay(400);
-  } 
+void loop()
+{    
+  sendPacket(8, TP); // 8 is the whole array    
+  delay(400);
+} 
 
 void sendPacket(byte count, char TP[]){
+  char state;
   WriteReg(REG_IOCFG1,0x06);
-  // Make sure that the radio is in IDLE state before flushing the FIFO
-  SendStrobe(CC2500_IDLE);
-  // Flush TX FIFO
-  SendStrobe(CC2500_FTX); 
-  //SendStrobe(CC2500_IDLE); Do I need to go to idle and
+  // Make sure that the radio is in IDLE state before flushing the FIFO  
+  //Serial.println(15&ReadReg(0xF5),DEC); 
+  // Flush TX FIFO  
   
+  SendStrobe(CC2500_FTX); 
+   
+  SendStrobe(CC2500_IDLE); //Do I need to go to idle?
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);  
-
   SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions  
   previousTXTimeoutMillis = millis();
-  while (!digitalRead(MISO)) {
-  }  
+  while (!digitalRead(MISO)) {  
+  }    
   previousTXTimeoutMillis = millis();
-  while (digitalRead(MISO)) {
-  }  
+  while (digitalRead(MISO)) {    
+  }    
   Serial.println("Finished sending");
-  SendStrobe(CC2500_IDLE);
+  SendStrobe(CC2500_IDLE);  
 }
 
 void listenForPacket() {
@@ -122,6 +115,4 @@ void Read_Config_Regs(void)
   Serial.println(ReadReg(REG_IOCFG1),HEX);
   delayMicroseconds(1);
   Serial.println(ReadReg(REG_IOCFG0),HEX);
-  delayMicroseconds(1);
-  Serial.println(ReadReg(0x3E),HEX);  
 }
