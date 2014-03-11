@@ -12,7 +12,7 @@
 #define CC2500_FRX     0x3A      // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
-#define CC2500_RXFIFO  0xBF   //code works with 0x3F
+#define CC2500_RXFIFO  0x3F   //code works with 0x3F
 
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
