@@ -124,6 +124,11 @@ void listenForPacket() {
      
   }  
   
+  for(int i = 0; i < 8; i++)
+    {
+      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
+    }  
+  
   Serial.println("PACKET Received");  
   Serial.println(ReadReg(0xFB),HEX);
   if(ReadReg(0xFB)==0)//number of bytes in RX FIFO 
