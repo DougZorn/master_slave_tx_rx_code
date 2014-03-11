@@ -16,9 +16,9 @@ void WriteReg(char addr, char value) //see page 22 of cc2500 data sheet for timi
   digitalWrite(SS,HIGH);
 }
 
-void WriteReg_burst(char addr, char value[], byte count)
+void WriteTX_burst(char addr, char value[], byte count)
 {  
-  //addr = addr + 0x40;
+  addr = addr + 0x40;
   digitalWrite(SS,LOW);
   delayMicroseconds(150);  
   while (digitalRead(MISO) == HIGH) {
@@ -59,6 +59,18 @@ char ReadReg(char addr){
   return y;  
 }
 
+char ReadOnly_Reg(char addr){
+  addr = addr + 0xC0;
+  digitalWrite(SS,LOW);
+  while (digitalRead(MISO) == HIGH) {
+    };
+  char x = SPI.transfer(addr);
+  delay(10);
+  char y = SPI.transfer(0);
+  digitalWrite(SS,HIGH);
+  return y;  
+}
+
 char SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
@@ -66,6 +78,8 @@ char SendStrobe(char strobe){
   };
     
   char result =  SPI.transfer(strobe);
+  //while (!digitalRead(MISO)) {}; //This doesn't work because MISO asserts before the transfer is complete. Although you won't MISO to assert and deassert before you transfer something again in burst mode.
+  //while (digitalRead(MISO)) {};
   digitalWrite(SS,HIGH);
   delay(10);
   return result;

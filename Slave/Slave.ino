@@ -4,15 +4,16 @@
 #include "read_write.h"
 
 #include <SPI.h>
+//These are all single byte burst address for write and read. ReadReg modifies the address for single and burst reads. WriteReg single and burst make similar modifications to the address. See page 60 of the datasheet
 
-#define CC2500_IDLE    0x36      // Exit RX / TX, turn
-#define CC2500_TX      0x35      // Enable TX. If in RX state, only enable TX if CCA passes
 #define CC2500_RX      0x34      // Enable RX. Perform calibration if enabled
-#define CC2500_FTX     0x3B      // Flush the TX FIFO buffer. Only issue SFTX in IDLE or TXFIFO_UNDERFLOW states
+#define CC2500_TX      0x35      // Enable TX. If in RX state, only enable TX if CCA passes
+#define CC2500_IDLE    0x36      // Exit RX / TX, turn
 #define CC2500_FRX     0x3A      // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
+#define CC2500_FTX     0x3B      // Flush the TX FIFO buffer. Only issue SFTX in IDLE or TXFIFO_UNDERFLOW states
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
-#define CC2500_RXFIFO  0xBF   //code works with 0x3F
+#define CC2500_RXFIFO  0x3F
 
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
@@ -67,7 +68,7 @@ void sendPacket(byte count, char TP[]){
   SendStrobe(CC2500_FTX); 
   SendStrobe(CC2500_IDLE);
 
-  WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
+  WriteTX_burst(CC2500_TXFIFO_BURST,TP,count);
   
   //Serial.println(ReadReg(0x3A),HEX);  
   //Serial.println(ReadReg(0x3B),HEX);
@@ -114,7 +115,7 @@ void listenForPacket() {
   //I get to this point and the GDO_2 never deassertes but it should
   //ReadReg(0xFB);
   //ReadReg(0xFB);
-  ReadReg(0xFB);
+  //ReadReg(0xFB);
   while(!digitalRead(MISO))   // with GDO_2 = 6 asserted when received and deasserted when end of packet. !!!!!!Wne should never empty (read REG the FIFO) the RX FIFO before the last byte of the packet is received!!!!!!!!!!!!!!!!!!!
   {
      
@@ -125,8 +126,8 @@ void listenForPacket() {
   }  
   
   Serial.println("PACKET Received");  
-  Serial.println(ReadReg(0xFB),HEX);
-  if(ReadReg(0xFB)==0)//number of bytes in RX FIFO 
+  //Serial.println(ReadReg(0xFB),HEX);
+  if(ReadOnly_Reg(0x3B)==0)//number of bytes in RX FIFO 
   {
     Serial.println("CRC FAILED");     
   }
@@ -135,10 +136,11 @@ void listenForPacket() {
     Serial.println("CRC PASSED");
     for(int i = 0; i < 8; i++)
     {
-      Serial.printl(ReadReg(CC2500_RXFIFO)); 
+      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
       Serial.println(" ");
     }    
-  }  
+  }
+  
   SendStrobe(CC2500_IDLE);  
   //Serial.println("IDLE bottom");
   SendStrobe(CC2500_FRX);

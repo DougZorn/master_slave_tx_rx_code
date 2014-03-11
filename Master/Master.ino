@@ -4,15 +4,16 @@
 #include "read_write.h"
 
 #include <SPI.h>
+//These are all single byte burst address for write and read. ReadReg modifies the address for single and burst reads. WriteReg single and burst make similar modifications to the address. See page 60 of the datasheet
 
-#define CC2500_IDLE    0x36      // Exit RX / TX, turn
-#define CC2500_TX      0x35      // Enable TX. If in RX state, only enable TX if CCA passes
 #define CC2500_RX      0x34      // Enable RX. Perform calibration if enabled
-#define CC2500_FTX     0x3B      // Flush the TX FIFO buffer. Only issue SFTX in IDLE or TXFIFO_UNDERFLOW states
+#define CC2500_TX      0x35      // Enable TX. If in RX state, only enable TX if CCA passes
+#define CC2500_IDLE    0x36      // Exit RX / TX, turn
 #define CC2500_FRX     0x3A      // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
+#define CC2500_FTX     0x3B      // Flush the TX FIFO buffer. Only issue SFTX in IDLE or TXFIFO_UNDERFLOW states
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
-#define CC2500_RXFIFO  0xBF
+#define CC2500_RXFIFO  0x3F
 
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
@@ -61,7 +62,7 @@ void sendPacket(byte count, char TP[]){
   SendStrobe(CC2500_FTX); 
   Serial.println("flushed"); 
   //SendStrobe(CC2500_IDLE); //Do I need to go to idle?
-  WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
+  WriteTX_burst(CC2500_TXFIFO_BURST,TP,count);
   Serial.println("written");   
   SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions
   //ReadReg(REG_IOCFG1);
