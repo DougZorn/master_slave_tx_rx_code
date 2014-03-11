@@ -15,6 +15,7 @@
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
 
+
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
 
@@ -124,6 +125,11 @@ void listenForPacket() {
   {
      
   }  
+  
+  for(int i = 0; i < 8; i++)
+    {
+      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
+    }  
   
   Serial.println("PACKET Received");  
   //Serial.println(ReadReg(0xFB),HEX);
