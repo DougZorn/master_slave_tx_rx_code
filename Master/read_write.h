@@ -2,30 +2,28 @@
 #ifndef READ_WRITE_H
 #define READ_WRITE_H
 
-char WriteReg(char addr, char value) //see page 22 of cc2500 data sheet for timing
+void WriteReg(char addr, char value) //see page 22 of cc2500 data sheet for timing
 {
-  char x;
   digitalWrite(SS,LOW);
   delayMicroseconds(150);
   while (digitalRead(MISO) == HIGH)
   {
   };    
-  x = SPI.transfer(addr);
+  SPI.transfer(addr);
   delayMicroseconds(1);
   SPI.transfer(value);
   delayMicroseconds(1);
   digitalWrite(SS,HIGH);
-  return x;
 }
 
-char WriteReg_burst(char addr, char value[], byte count)
-{
-  char x;
+void WriteReg_burst(char addr, char value[], byte count)
+{  
+  //addr = addr + 0x40;
   digitalWrite(SS,LOW);
   delayMicroseconds(150);  
   while (digitalRead(MISO) == HIGH) {
   };
-  x = SPI.transfer(addr);
+  SPI.transfer(addr);
   delayMicroseconds(1);    
   for(byte i = 0; i<count; i++)
   {
@@ -33,9 +31,8 @@ char WriteReg_burst(char addr, char value[], byte count)
   }
   delayMicroseconds(1);
   digitalWrite(SS,HIGH);  
-  return x;
 }
-
+/*
 char ReadReg(char addr){
   addr = addr + 0x80;
   delayMicroseconds(150);
@@ -49,6 +46,19 @@ char ReadReg(char addr){
   digitalWrite(SS,HIGH);
   return y;  
 }
+*/
+char ReadReg(char addr){
+  addr = addr + 0x80;
+  digitalWrite(SS,LOW);
+  while (digitalRead(MISO) == HIGH) {
+    };
+  char x = SPI.transfer(addr);
+  delay(10);
+  char y = SPI.transfer(0);
+  digitalWrite(SS,HIGH);
+  return y;  
+}
+
 char SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
@@ -60,18 +70,16 @@ char SendStrobe(char strobe){
   delay(10);
   return result;
 }
+
 /*
-char SendStrobe(char strobe){
-  char x;
+void SendStrobe(char strobe){
   delayMicroseconds(150);
   digitalWrite(SS,LOW);  
   while (digitalRead(MISO) == HIGH) {
   };  
-  x = SPI.transfer(strobe);
+  SPI.transfer(strobe);
   delayMicroseconds(1); 
   digitalWrite(SS,HIGH);    
-  return x;
 }
 */
 #endif
-

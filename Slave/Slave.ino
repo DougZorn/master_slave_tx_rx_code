@@ -12,7 +12,7 @@
 #define CC2500_FRX     0x3A      // Flush the RX FIFO buffer. Only issue SFRX in IDLE or RXFIFO_OVERFLOW states
 #define CC2500_SWOR    0x38
 #define CC2500_TXFIFO  0x3F
-#define CC2500_RXFIFO  0xBF
+#define CC2500_RXFIFO  0xBF   //code works with 0x3F
 
 #define CC2500_TXFIFO_BURST  0x7F
 #define CC2500_RXFIFO_BURST  0xFF
@@ -99,7 +99,7 @@ void listenForPacket() {
 //CC2500_RXFIFO 0x3F 
   
   //Serial.println("START LISTEN");
-  WriteReg(REG_IOCFG2,0x06);  
+  //WriteReg(REG_IOCFG2,0x06);  
   //Serial.println("IOCFG1 written");
   //SendStrobe(CC2500_IDLE); //36
   //Serial.println("IDLE top written");  
@@ -112,8 +112,8 @@ void listenForPacket() {
      
   //Serial.println("RX written");   
   //I get to this point and the GDO_2 never deassertes but it should
-  ReadReg(0xFB);
-  ReadReg(0xFB);
+  //ReadReg(0xFB);
+  //ReadReg(0xFB);
   ReadReg(0xFB);
   while(!digitalRead(MISO))   // with GDO_2 = 6 asserted when received and deasserted when end of packet. !!!!!!Wne should never empty (read REG the FIFO) the RX FIFO before the last byte of the packet is received!!!!!!!!!!!!!!!!!!!
   {
@@ -135,7 +135,7 @@ void listenForPacket() {
     Serial.println("CRC PASSED");
     for(int i = 0; i < 8; i++)
     {
-      Serial.write(ReadReg(CC2500_RXFIFO)); 
+      Serial.printl(ReadReg(CC2500_RXFIFO)); 
       Serial.println(" ");
     }    
   }  

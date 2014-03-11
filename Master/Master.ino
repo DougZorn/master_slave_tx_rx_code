@@ -53,7 +53,7 @@ void loop()
 
 void sendPacket(byte count, char TP[]){
   char state;
-  WriteReg(REG_IOCFG1,0x06);
+  //WriteReg(REG_IOCFG1,0x06);
   //Make sure that the radio is in IDLE state before flushing the FIFO  
   //Serial.println(15&ReadReg(0xF5),DEC); 
   //Flush TX FIFO  
@@ -64,7 +64,7 @@ void sendPacket(byte count, char TP[]){
   WriteReg_burst(CC2500_TXFIFO_BURST,TP,count);
   Serial.println("written");   
   SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions
-  ReadReg(REG_IOCFG1 );
+  //ReadReg(REG_IOCFG1);
   Serial.println("strobed"); 
   previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {  
