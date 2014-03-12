@@ -47,6 +47,7 @@ char ReadReg(char addr){
   return y;  
 }
 */
+
 char ReadReg(char addr){
   addr = addr + 0x80;
   digitalWrite(SS,LOW);

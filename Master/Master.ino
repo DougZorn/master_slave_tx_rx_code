@@ -15,8 +15,8 @@
 #define CC2500_TXFIFO  0x3F
 #define CC2500_RXFIFO  0x3F
 
-#define CC2500_TXFIFO_BURST  0x7F
-#define CC2500_RXFIFO_BURST  0xFF
+//#define CC2500_TXFIFO_BURST  0x7F
+//#define CC2500_RXFIFO_BURST  0xFF
 
 #define CC2500_SRES    0x30       // reset strobe 
 
@@ -59,18 +59,21 @@ void sendPacket(byte count, char TP[]){
   //Serial.println(15&ReadReg(0xF5),DEC); 
   //Flush TX FIFO  
   //SendStrobe(CC2500_RX);
-  SendStrobe(CC2500_FTX); 
+  SendStrobe(CC2500_IDLE); 
+  SendStrobe(CC2500_FTX);
+  //SendStrobe(CC2500_IDLE); 
   Serial.println("flushed"); 
   //SendStrobe(CC2500_IDLE); //Do I need to go to idle?
-  WriteTX_burst(CC2500_TXFIFO_BURST,TP,count);
+  WriteTX_burst(CC2500_TXFIFO,TP,count);
+  
   Serial.println("written");   
   SendStrobe(CC2500_TX); //do not add code between the strobe and while loops otherwise it will miss the conditions
   //ReadReg(REG_IOCFG1);
-  Serial.println("strobed"); 
-  previousTXTimeoutMillis = millis();
+  //Serial.println("strobed"); 
+  //previousTXTimeoutMillis = millis();
   while (!digitalRead(MISO)) {  
   }    
-  previousTXTimeoutMillis = millis();
+  //previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {    
   }    
   Serial.println("Finished sending");

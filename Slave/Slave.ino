@@ -58,7 +58,7 @@ void loop()
 {  
   //sendPacket(7, TP);
   listenForPacket();
-  delay(500);
+  delay(500); //this might not be necessary.
 } 
 
 void sendPacket(byte count, char TP[]){
@@ -124,23 +124,18 @@ void listenForPacket() {
   while(digitalRead(MISO)) 
   {
      
-  }  
-  
-  for(int i = 0; i < 8; i++)
-    {
-      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
-    }  
-  
+  }   
   Serial.println("PACKET Received");  
   //Serial.println(ReadReg(0xFB),HEX);
-  if(ReadOnly_Reg(0x3B)==0)//number of bytes in RX FIFO 
+  if(ReadOnly_Reg(0x3B)==0)//number of bytes in RX FIFO. Currently autoflush is turned off. So the CRC might never fail
   {
     Serial.println("CRC FAILED");     
   }
   else
   {
     Serial.println("CRC PASSED");
-    for(int i = 0; i < 8; i++)
+    
+    for(int i = 0; i < 10; i++)
     {
       Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
       Serial.println(" ");
