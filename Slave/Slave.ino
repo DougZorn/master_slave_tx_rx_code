@@ -48,7 +48,7 @@ void setup()
   pinMode(SS,OUTPUT);
   SPI.begin();
   digitalWrite(SS,HIGH);
-  Serial.println("Initializing Wireless..");
+  //Serial.println("Initializing Wireless..");
   SendStrobe(CC2500_SRES);
   init_CC2500_V2();  
   Read_Config_Regs(); 
@@ -58,7 +58,7 @@ void loop()
 {  
   //sendPacket(7, TP);
   listenForPacket();
-  delay(500); //this might not be necessary.
+  //delay(500); //this might not be necessary.
 } 
 
 void sendPacket(byte count, char TP[]){
@@ -83,8 +83,7 @@ void sendPacket(byte count, char TP[]){
   }  
   previousTXTimeoutMillis = millis();
   while (digitalRead(MISO)) {
-  } 
-  
+  }  
   
   Serial.println("Finished sending");
   SendStrobe(CC2500_IDLE);
@@ -124,22 +123,28 @@ void listenForPacket() {
   while(digitalRead(MISO)) 
   {
      
-  }   
-  Serial.println("PACKET Received");  
+  } 
+  //SendStrobe(CC2500_IDLE);    
+  //Serial.println("PACKET Received");  
   //Serial.println(ReadReg(0xFB),HEX);
   if(ReadOnly_Reg(0x3B)==0)//number of bytes in RX FIFO. Currently autoflush is turned off. So the CRC might never fail
   {
-    Serial.println("CRC FAILED");     
+    //Serial.println("CRC FAILED");     
   }
   else
   {
-    Serial.println("CRC PASSED");
+    //Serial.println("CRC PASSED");
     
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 8; i++)
     {
-      Serial.println(ReadReg(CC2500_RXFIFO),HEX); 
-      Serial.println(" ");
-    }    
+      ReadReg(CC2500_RXFIFO);
+    }
+    //Serial.println("");
+    Serial.print(ReadReg(CC2500_RXFIFO),DEC);
+    Serial.print(",");
+    Serial.println(0x7F&ReadReg(CC2500_RXFIFO),DEC);
+   // Serial.println("");
+   // Serial.println(0x7F&ReadOnly_Reg(0x33),DEC);
   }
   
   SendStrobe(CC2500_IDLE);  
@@ -149,11 +154,13 @@ void listenForPacket() {
 }
 
 void Read_Config_Regs(void){ 
-  Serial.println(ReadReg(REG_IOCFG2),HEX);
-  delayMicroseconds(1);
-  Serial.println(ReadReg(REG_IOCFG1),HEX);
-  delayMicroseconds(1);
-  Serial.println(ReadReg(REG_IOCFG0),HEX);
- 
+  //Serial.println(ReadReg(REG_IOCFG2),HEX);
+  //delayMicroseconds(1);
+  //Serial.println(ReadReg(REG_IOCFG1),HEX);
+  //delayMicroseconds(1);
+  //Serial.println(ReadReg(REG_IOCFG0),HEX);
+  //delayMicroseconds(1);
+  //Serial.println(ReadReg(0x3E),DEC);
+  
 }
 

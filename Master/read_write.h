@@ -32,7 +32,7 @@ void WriteTX_burst(char addr, char value[], byte count)
   delayMicroseconds(1);
   digitalWrite(SS,HIGH);  
 }
-/*
+
 char ReadReg(char addr){
   addr = addr + 0x80;
   delayMicroseconds(150);
@@ -46,8 +46,8 @@ char ReadReg(char addr){
   digitalWrite(SS,HIGH);
   return y;  
 }
-*/
 
+/*
 char ReadReg(char addr){
   addr = addr + 0x80;
   digitalWrite(SS,LOW);
@@ -59,6 +59,7 @@ char ReadReg(char addr){
   digitalWrite(SS,HIGH);
   return y;  
 }
+*/
 
 char ReadOnly_Reg(char addr){
   addr = addr + 0xC0;
@@ -66,12 +67,14 @@ char ReadOnly_Reg(char addr){
   while (digitalRead(MISO) == HIGH) {
     };
   char x = SPI.transfer(addr);
-  delay(10);
+  delayMicroseconds(1);
   char y = SPI.transfer(0);
   digitalWrite(SS,HIGH);
   return y;  
 }
 
+
+/*
 char SendStrobe(char strobe){
   digitalWrite(SS,LOW);
   
@@ -85,8 +88,8 @@ char SendStrobe(char strobe){
   delay(10);
   return result;
 }
+*/
 
-/*
 void SendStrobe(char strobe){
   delayMicroseconds(150);
   digitalWrite(SS,LOW);  
@@ -96,5 +99,5 @@ void SendStrobe(char strobe){
   delayMicroseconds(1); 
   digitalWrite(SS,HIGH);    
 }
-*/
+
 #endif
