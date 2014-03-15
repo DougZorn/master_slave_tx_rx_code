@@ -44,12 +44,15 @@ void setup(){
   Serial.println("Initializing Wireless..");
   SendStrobe(CC2500_SRES);
   init_CC2500_V2();  
-  Read_Config_Regs();  
+  Read_Config_Regs();
+  pinMode(9, OUTPUT);
+  digitalWrite(9,HIGH);     
 }
 void loop()
 {    
   sendPacket(8, TP); // 8 is the whole array    
-  //delay(10000);
+  //delay(100);  
+  //delay(1);
 } 
 
 void sendPacket(byte count, char TP[]){
